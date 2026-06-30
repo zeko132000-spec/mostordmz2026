@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>نتيجة المدرسة</title>
+  <meta name="description" content="موقع الاستعلام عن نتيجة المدرسة برقم الجلوس والصف" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- ===== Intro / Welcome Screen ===== -->
+  <div id="introScreen" class="intro-screen">
+    <div class="intro-bg-anim">
+      <div class="intro-orb orb-1"></div>
+      <div class="intro-orb orb-2"></div>
+    </div>
+    <div class="intro-content">
+      <div class="intro-logo">🎓</div>
+      <div class="intro-gov">محافظة القليوبية</div>
+      <h1 class="intro-title">أهلاً بك في إدارة شرق شبرا الخيمة<br>ومجمع مسطرد للتعليم الأساسى</h1>
+      <div class="intro-photos">
+        <div class="intro-photo-card">
+          <img src="photo-director.jpg" alt="مدير الإدارة" onerror="this.parentElement.style.display='none'" />
+          <div class="intro-photo-caption">أ. خالد أبو العلا<br><span>مدير إدارة شرق شبرا الخيمة التعليمية</span></div>
+        </div>
+        <div class="intro-photo-card">
+          <img src="photo-mz.jpg" alt="أ. فاروق" onerror="this.parentElement.style.display='none'" />
+          <div class="intro-photo-caption">أ. فاروق<br><span>مدير مجمع مسطرد للتعليم الأساسى</span></div>
+        </div>
+      </div>
+      <button id="enterBtn" class="intro-enter-btn">ابدأ الاستعلام عن النتيجة 🔍</button>
+      <div class="intro-credit">عمل الأستاذ محمد ذكى</div>
+    </div>
+  </div>
+  <!-- ===== End Intro ===== -->
+
+  <!-- Animated Background -->
+  <div class="bg-animation">
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
+  </div>
+
+  <!-- Watermark -->
+  <div class="watermark"></div>
+
+  <!-- Header -->
+  <header class="site-header">
+    <div class="header-content">
+      <div class="logo">
+        <div class="logo-icon">🎓</div>
+        <div class="logo-text">
+          <div class="school-gov">محافظة القليوبية</div>
+          <div class="school-admin">إدارة شرق شبرا الخيمة التعليمية</div>
+          <h1>مجمع مسطرد للتعليم الأساسى</h1>
+          <p>الاستعلام عن نتائج الطلاب</p>
+        </div>
+      </div>
+      <a href="admin.html" class="admin-link">
+        <span>⚙️</span>
+        <span>لوحة الإدارة</span>
+      </a>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="main-container">
+
+    <!-- Search Section -->
+    <section class="search-section">
+      <div class="search-card glass-card">
+        <div class="search-header">
+          <div class="search-icon">🔍</div>
+          <h2>ابحث عن نتيجتك</h2>
+          <p>أدخل رقم الجلوس والصف للاستعلام عن النتيجة</p>
+        </div>
+
+        <form id="searchForm" class="search-form">
+          <div class="form-row">
+            <div class="form-group">
+              <label for="seatNumber">رقم الجلوس</label>
+              <div class="input-wrapper">
+                <span class="input-icon">🪑</span>
+                <input
+                  type="text"
+                  id="seatNumber"
+                  placeholder="أدخل رقم الجلوس..."
+                  autocomplete="off"
+                  inputmode="numeric"
+                />
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="gradeSelect">الصف الدراسي</label>
+              <div class="input-wrapper">
+                <span class="input-icon">📚</span>
+                <select id="gradeSelect">
+                  <option value="">-- اختر الصف --</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="termSelect">الفصل الدراسي</label>
+              <div class="input-wrapper">
+                <span class="input-icon">📅</span>
+                <select id="termSelect">
+                  <option value="">-- كل الفصول --</option>
+                  <option value="الترم الأول">الترم الأول</option>
+                  <option value="الترم الثاني">الترم الثاني</option>
+                  <option value="الدور الثاني">الدور الثاني</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <button type="submit" class="search-btn" id="searchBtn">
+            <span class="btn-icon">🔍</span>
+            <span>بحث عن النتيجة</span>
+          </button>
+        </form>
+      </div>
+    </section>
+
+    <!-- Result Section -->
+    <section id="resultSection" class="result-section hidden">
+      <div id="resultContent"></div>
+    </section>
+
+    <!-- No Data Notice -->
+    <section id="noDataNotice" class="no-data-section hidden">
+      <div class="glass-card no-data-card">
+        <div class="no-data-icon">📂</div>
+        <h3>لا توجد بيانات</h3>
+        <p>لم يتم رفع أي بيانات نتائج بعد. يرجى التواصل مع إدارة المدرسة.</p>
+        <a href="admin.html" class="upload-link-btn">رفع البيانات من هنا ⬆️</a>
+      </div>
+    </section>
+
+    <!-- Stats Section -->
+    <section id="statsSection" class="stats-section hidden">
+      <div class="stats-grid" id="statsGrid"></div>
+    </section>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="site-footer">
+    <p>نظام نتائج المدرسة &copy; <span id="year"></span></p>
+    <p class="footer-credit">✨ عمل الأستاذ محمد ذكى ✨</p>
+  </footer>
+
+  <script type="module" src="app.js"></script>
+  <script>
+    // Intro screen logic
+    const intro = document.getElementById('introScreen');
+    const enterBtn = document.getElementById('enterBtn');
+    if (sessionStorage.getItem('intro_seen')) {
+      intro.style.display = 'none';
+    }
+    enterBtn.addEventListener('click', () => {
+      intro.classList.add('intro-hide');
+      sessionStorage.setItem('intro_seen', '1');
+      setTimeout(() => intro.style.display = 'none', 600);
+    });
+  </script>
+</body>
+</html>

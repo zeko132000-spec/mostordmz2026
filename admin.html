@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>لوحة الإدارة - نتيجة المدرسة</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+  <!-- SheetJS for Excel parsing -->
+  <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
+</head>
+<body>
+  <!-- Animated Background -->
+  <div class="bg-animation">
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
+  </div>
+
+  <!-- Watermark -->
+  <div class="watermark"></div>
+
+  <!-- Header -->
+  <header class="site-header">
+    <div class="header-content">
+      <div class="logo">
+        <div class="logo-icon">⚙️</div>
+        <div class="logo-text">
+          <div class="school-gov">محافظة القليوبية</div>
+          <div class="school-admin">إدارة شرق شبرا الخيمة التعليمية</div>
+          <h1>مجمع مسطرد للتعليم الأساسى</h1>
+          <p>لوحة الإدارة — رفع وإدارة بيانات النتائج</p>
+        </div>
+      </div>
+      <a href="index.html" class="admin-link">
+        <span>🔍</span>
+        <span>صفحة البحث</span>
+      </a>
+    </div>
+  </header>
+
+  <!-- Password Overlay -->
+  <div id="passwordOverlay" class="password-overlay">
+    <div class="password-card glass-card">
+      <div class="pw-icon">🔐</div>
+      <h2>منطقة محمية</h2>
+      <p>أدخل كلمة المرور للوصول إلى لوحة الإدارة</p>
+      <div class="pw-input-wrap">
+        <input type="password" id="pwInput" placeholder="كلمة المرور..." autocomplete="off" />
+        <button id="pwBtn" class="pw-btn">دخول</button>
+      </div>
+      <div id="pwError" class="pw-error hidden">❌ كلمة المرور غير صحيحة</div>
+    </div>
+  </div>
+
+  <!-- ✅ Custom Confirm Modal (بديل confirm() للموبايل) -->
+  <div id="confirmModal" style="display:none; position:fixed; inset:0; z-index:999999;
+    background:rgba(0,0,0,0.75); align-items:center; justify-content:center;
+    backdrop-filter:blur(6px);">
+    <div style="background:#1e1e2e; border:1px solid rgba(255,255,255,0.15);
+      border-radius:20px; padding:2rem; max-width:380px; width:90%; text-align:center;
+      box-shadow:0 20px 60px rgba(0,0,0,0.6);">
+      <div style="font-size:3rem; margin-bottom:1rem;">🗑️</div>
+      <h3 style="color:#fff; font-size:1.2rem; margin-bottom:0.6rem;">تأكيد الحذف</h3>
+      <p id="confirmMsg" style="color:#94a3b8; margin-bottom:1.5rem; font-size:0.95rem;">هل أنت متأكد من حذف هذه البيانات؟</p>
+      <div style="display:flex; gap:1rem; justify-content:center;">
+        <button id="confirmYesBtn" style="flex:1; padding:0.8rem; background:linear-gradient(135deg,#ef4444,#dc2626);
+          border:none; border-radius:12px; color:#fff; font-family:'Cairo',sans-serif;
+          font-size:1rem; font-weight:700; cursor:pointer;">✅ نعم، احذف</button>
+        <button id="confirmNoBtn" style="flex:1; padding:0.8rem; background:rgba(255,255,255,0.08);
+          border:1px solid rgba(255,255,255,0.15); border-radius:12px; color:#e2e8f0;
+          font-family:'Cairo',sans-serif; font-size:1rem; cursor:pointer;">❌ إلغاء</button>
+      </div>
+    </div>
+  </div>
+
+  <main class="main-container" id="adminMain" style="display:none">
+
+    <!-- Upload Section -->
+    <section class="upload-section">
+      <div class="glass-card upload-card">
+        <div class="upload-header">
+          <div class="upload-icon-big">📊</div>
+          <h2>رفع ملف النتيجة</h2>
+          <p>ارفع ملف الإكسيل الخاص بنتيجة المدرسة</p>
+        </div>
+
+        <form id="uploadForm" class="upload-form">
+          <div class="form-row">
+            <div class="form-group">
+              <label for="uploadGrade">الصف الدراسي</label>
+              <div class="input-wrapper">
+                <span class="input-icon">📚</span>
+                <input type="text" id="uploadGrade" placeholder="مثال: الثالث الابتدائي" />
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="uploadTerm">الفصل الدراسي</label>
+              <div class="input-wrapper">
+                <span class="input-icon">📅</span>
+                <select id="uploadTerm">
+                  <option value="الترم الأول">الترم الأول</option>
+                  <option value="الترم الثاني">الترم الثاني</option>
+                  <option value="الدور الثاني">الدور الثاني</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <!-- Drop Zone -->
+          <div class="drop-zone" id="dropZone">
+            <input type="file" id="fileInput" accept=".xlsx,.xls,.csv" hidden />
+            <div class="drop-content" id="dropContent">
+              <div class="drop-icon">📁</div>
+              <h3>اسحب الملف هنا أو اضغط للاختيار</h3>
+              <p>يدعم ملفات Excel (xlsx, xls) وCSV</p>
+              <button type="button" class="choose-file-btn" id="chooseFileBtn">
+                اختر الملف
+              </button>
+            </div>
+          </div>
+
+          <!-- Column Mapping -->
+          <div id="columnMappingSection" class="mapping-section hidden">
+            <h3>🗂️ تحديد الأعمدة</h3>
+            <p>حدد العمود المقابل لكل حقل من الملف المرفوع:</p>
+            <div class="mapping-grid" id="mappingGrid"></div>
+          </div>
+
+          <!-- Preview Table -->
+          <div id="previewSection" class="preview-section hidden">
+            <div class="preview-header">
+              <h3>👁️ معاينة البيانات</h3>
+              <span id="previewCount" class="preview-count"></span>
+            </div>
+            <div class="table-wrapper">
+              <table id="previewTable" class="data-table"></table>
+            </div>
+          </div>
+
+          <div class="upload-actions">
+            <button type="submit" class="upload-btn hidden" id="uploadBtn">
+              <span>💾</span>
+              <span>حفظ النتيجة</span>
+            </button>
+            <button type="button" class="clear-btn" id="clearBtn">
+              <span>🗑️</span>
+              <span>مسح كل البيانات</span>
+            </button>
+          </div>
+        </form>
+
+        <!-- Upload Status -->
+        <div id="uploadStatus" class="upload-status hidden"></div>
+      </div>
+    </section>
+
+    <!-- Stored Data Overview -->
+    <section class="stored-data-section">
+      <div class="glass-card">
+        <h2 class="section-title">📋 البيانات المحفوظة</h2>
+        <div id="storedDataList" class="stored-data-list">
+          <div class="empty-state">لا توجد بيانات محفوظة بعد</div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="site-footer">
+    <p>نظام نتائج المدرسة &copy; <span id="year"></span></p>
+  </footer>
+
+  <script type="module" src="admin.js"></script>
+</body>
+</html>
